@@ -1,0 +1,22 @@
+﻿# Created by https://www.toptal.com/developers/gitignore/api/fsharp
+# Edit at https://www.toptal.com/developers/gitignore?templates=fsharp
+
+### fsharp ###
+lib/debug
+lib/release
+Debug
+*.suo
+*.user
+obj
+bin
+/build/
+*.exe
+!.paket/paket.bootstrapper.exe
+.ionide/
+.fake
+
+# End of https://www.toptal.com/developers/gitignore/api/fsharp
+
+# Eric Wastl prefers if we don't publish input files
+# https://twitter.com/ericwastl/status/1465805354214830081
+*.txt
