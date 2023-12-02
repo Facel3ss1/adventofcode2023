@@ -1,6 +1,4 @@
-﻿#load "Day1.fs"
-
-open System.IO
+﻿open System.IO
 
 let solvePart1 (day: int) (lines: string list) =
     match day with
@@ -25,6 +23,10 @@ let printSolutions (day: int) =
     printfn $"Part 1: {part1Solution}"
     printfn $"Part 2: {part2Solution}"
 
-match fsi.CommandLineArgs with
-| [| _; day |] -> printSolutions (int day)
-| _ -> eprintfn "usage: <day>"
+[<EntryPoint>]
+let main (args: string array) =
+    match args with
+    | [| day |] -> printSolutions (int day)
+    | _ -> eprintfn "usage: <day>"
+
+    0
