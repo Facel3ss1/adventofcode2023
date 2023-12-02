@@ -4,26 +4,21 @@ open System
 
 let inline charToInt (c: char) = int c - int '0'
 
-let extractDigits (line: string): int list =
+let extractDigits (line: string) : int list =
     line |> Seq.toList |> List.filter Char.IsNumber |> List.map charToInt
 
 // This is a 'active pattern' - let's you define your own pattern matching 🤯
-let (|StringPrefix|_|) (prefix: string) (s : string) =
-    if s.StartsWith(prefix) then
-        Some()
-    else
-        None
+let (|StringPrefix|_|) (prefix: string) (s: string) =
+    if s.StartsWith(prefix) then Some() else None
 
-let (|DigitPrefix|_|) (s : string) =
-    if String.length s = 0 then
-        None
-    else if Char.IsNumber s[0] then
-        Some(charToInt s[0])
-    else
-        None
+let (|DigitPrefix|_|) (s: string) =
+    if String.length s = 0 then None
+    else if Char.IsNumber s[0] then Some(charToInt s[0])
+    else None
 
-let rec extractWordsAndDigits (line: string): int list =
+let rec extractWordsAndDigits (line: string) : int list =
     let rest = line[1..]
+
     match line with
     | StringPrefix "one" -> 1 :: extractWordsAndDigits rest
     | StringPrefix "two" -> 2 :: extractWordsAndDigits rest
@@ -47,11 +42,7 @@ let firstAndLastDigit (digits: int list) =
         10 * first + last
 
 let solve (parseLine: string -> int list) (lines: string list) =
-    lines
-    |> List.map parseLine
-    |> List.map firstAndLastDigit
-    |> List.sum
-    |> string
+    lines |> List.map parseLine |> List.map firstAndLastDigit |> List.sum |> string
 
 let solvePart1 = solve extractDigits
 
