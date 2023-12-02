@@ -4,13 +4,13 @@ open System
 
 let inline charToInt (c: char) = int c - int '0'
 
-let removeLetters (line: string): int list =
+let extractDigits (line: string): int list =
     line |> Seq.toList |> List.filter Char.IsNumber |> List.map charToInt
 
 // This is a 'active pattern' - let's you define your own pattern matching 🤯
 let (|StringPrefix|_|) (prefix: string) (s : string) =
     if s.StartsWith(prefix) then
-        Some(s.Substring(prefix.Length))
+        Some()
     else
         None
 
@@ -22,21 +22,21 @@ let (|DigitPrefix|_|) (s : string) =
     else
         None
 
-let rec consumeNumberWords (line: string): int list =
+let rec extractWordsAndDigits (line: string): int list =
     let rest = line[1..]
     match line with
-    | StringPrefix "one" _ -> 1 :: consumeNumberWords rest
-    | StringPrefix "two" _ -> 2 :: consumeNumberWords rest
-    | StringPrefix "three" _ -> 3 :: consumeNumberWords rest
-    | StringPrefix "four" _ -> 4 :: consumeNumberWords rest
-    | StringPrefix "five" _ -> 5 :: consumeNumberWords rest
-    | StringPrefix "six" _ -> 6 :: consumeNumberWords rest
-    | StringPrefix "seven" _ -> 7 :: consumeNumberWords rest
-    | StringPrefix "eight" _ -> 8 :: consumeNumberWords rest
-    | StringPrefix "nine" _ -> 9 :: consumeNumberWords rest
-    | DigitPrefix digit -> digit :: consumeNumberWords rest
+    | StringPrefix "one" -> 1 :: extractWordsAndDigits rest
+    | StringPrefix "two" -> 2 :: extractWordsAndDigits rest
+    | StringPrefix "three" -> 3 :: extractWordsAndDigits rest
+    | StringPrefix "four" -> 4 :: extractWordsAndDigits rest
+    | StringPrefix "five" -> 5 :: extractWordsAndDigits rest
+    | StringPrefix "six" -> 6 :: extractWordsAndDigits rest
+    | StringPrefix "seven" -> 7 :: extractWordsAndDigits rest
+    | StringPrefix "eight" -> 8 :: extractWordsAndDigits rest
+    | StringPrefix "nine" -> 9 :: extractWordsAndDigits rest
+    | DigitPrefix digit -> digit :: extractWordsAndDigits rest
     | "" -> []
-    | _ -> consumeNumberWords rest
+    | _ -> extractWordsAndDigits rest
 
 let firstAndLastDigit (digits: int list) =
     if List.isEmpty digits then
@@ -46,16 +46,13 @@ let firstAndLastDigit (digits: int list) =
         let last = List.last digits
         10 * first + last
 
-let solvePart1 (lines: string list) =
+let solve (parseLine: string -> int list) (lines: string list) =
     lines
-    |> List.map removeLetters
+    |> List.map parseLine
     |> List.map firstAndLastDigit
     |> List.sum
     |> string
 
-let solvePart2 (lines: string list) =
-    lines
-    |> List.map consumeNumberWords
-    |> List.map firstAndLastDigit
-    |> List.sum
-    |> string
+let solvePart1 = solve extractDigits
+
+let solvePart2 = solve extractWordsAndDigits
