@@ -45,6 +45,16 @@ let isSetPossible (bag: CubeSet) (set: CubeSet) =
 let isGamePossible (bag: CubeSet) (game: Game) =
     game.Sets |> List.map (isSetPossible bag) |> List.reduce (&&)
 
+let power (set: CubeSet) = set.Red * set.Green * set.Blue
+
+let minimumCubes (game: Game) =
+    let reducer (leftSet: CubeSet) (rightSet: CubeSet) =
+        { Red = max leftSet.Red rightSet.Red
+          Green = max leftSet.Green rightSet.Green
+          Blue = max leftSet.Blue rightSet.Blue }
+
+    game.Sets |> List.reduce reducer
+
 let solvePart1 (lines: string list) : string =
     let games = lines |> List.map parseGame
 
@@ -53,3 +63,8 @@ let solvePart1 (lines: string list) : string =
     |> List.map (fun game -> game.Id)
     |> List.sum
     |> string
+
+let solvePart2 (lines: string list) : string =
+    let games = lines |> List.map parseGame
+
+    games |> List.map (minimumCubes >> power) |> List.sum |> string
