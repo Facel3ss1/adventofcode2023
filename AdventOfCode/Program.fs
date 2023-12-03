@@ -11,6 +11,7 @@ let part2Solver day =
     match day with
     | 1 -> Day1.solvePart2
     | 2 -> Day2.solvePart2
+    | 3 -> Day3.solvePart2
     | _ -> fun _ -> "not solved"
 
 let readLines (day: int) =

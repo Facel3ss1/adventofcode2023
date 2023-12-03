@@ -69,16 +69,44 @@ let getAdjacentCoords (partNumber: PartNumber) : Coord list =
 
     rows |> List.collect coordsForRow |> List.filter (isOnNumber >> not)
 
-let isPartNumberAdjacentToSymbol (symbols: Map<Coord, char>) (partNumber: PartNumber) : bool =
-    getAdjacentCoords partNumber
-    |> List.exists (fun coord -> symbols |> Map.containsKey coord)
+let getAdjacentSymbols (symbols: Map<Coord, char>) (partNumber: PartNumber) : (Coord * char) list =
+    let symbolEntry (coord: Coord) =
+        symbols |> Map.tryFind coord |> Option.map (fun symbol -> (coord, symbol))
+
+    getAdjacentCoords partNumber |> List.choose symbolEntry
 
 let solvePart1 (lines: string list) : string =
     let symbols = extractSymbols lines
     let partNumbers = extractPartNumbers lines
 
     partNumbers
-    |> List.filter (isPartNumberAdjacentToSymbol symbols)
+    |> List.filter (getAdjacentSymbols symbols >> List.isEmpty >> not)
     |> List.map (fun partNumber -> partNumber.Number)
+    |> List.sum
+    |> string
+
+let solvePart2 (lines: string list) : string =
+    let symbols = extractSymbols lines
+    let partNumbers = extractPartNumbers lines
+
+    let adjacentEntries (partNumber: PartNumber) : (char * Coord * PartNumber) list =
+        getAdjacentSymbols symbols partNumber
+        |> List.map (fun (coord, symbol) -> (symbol, coord, partNumber))
+
+    let gearEntries: (Coord * PartNumber) list =
+        partNumbers
+        |> List.collect adjacentEntries
+        |> List.filter (fun (symbol, _, _) -> symbol = '*')
+        |> List.map (fun (_, coord, partNumber) -> (coord, partNumber))
+
+    let gearPartNumbers: PartNumber list list =
+        gearEntries
+        |> List.groupBy fst
+        |> List.map (snd >> List.map snd)
+        |> List.filter (fun partNumbers -> List.length partNumbers = 2)
+
+    gearPartNumbers
+    |> List.map (List.map (fun partNumber -> partNumber.Number))
+    |> List.map (List.reduce (*))
     |> List.sum
     |> string
