@@ -3,6 +3,7 @@
 let solvePart1 (day: int) (lines: string list) =
     match day with
     | 1 -> Day1.solvePart1 lines
+    | 2 -> Day2.solvePart1 lines
     | _ -> "invalid day"
 
 let solvePart2 (day: int) (lines: string list) =
