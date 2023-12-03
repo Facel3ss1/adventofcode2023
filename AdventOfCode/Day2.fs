@@ -43,7 +43,7 @@ let isSetPossible (bag: CubeSet) (set: CubeSet) =
     set.Red <= bag.Red && set.Green <= bag.Green && set.Blue <= bag.Blue
 
 let isGamePossible (bag: CubeSet) (game: Game) =
-    game.Sets |> List.map (isSetPossible bag) |> List.reduce (&&)
+    game.Sets |> List.forall (isSetPossible bag)
 
 let power (set: CubeSet) = set.Red * set.Green * set.Blue
 
