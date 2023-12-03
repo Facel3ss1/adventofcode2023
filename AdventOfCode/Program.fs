@@ -4,6 +4,7 @@ let part1Solver day =
     match day with
     | 1 -> Day1.solvePart1
     | 2 -> Day2.solvePart1
+    | 3 -> Day3.solvePart1
     | _ -> fun _ -> "not solved"
 
 let part2Solver day =
