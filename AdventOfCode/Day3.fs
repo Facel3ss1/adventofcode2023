@@ -31,27 +31,24 @@ let extractPartNumbers (lines: string list) : PartNumber list =
     let extractPartNumbersFromRow (row: int, line: string) : PartNumber list =
         let digits = line |> Seq.indexed |> Seq.filter (snd >> isDigit)
 
-        let folder (numbers: (string * int * int) list) (currentColumn: int, digitChar: char) =
-            let digit = string digitChar
-            let newNumber = (digit, currentColumn, currentColumn)
-
+        let folder (numbers: (int * int) list) (currentColumn: int, _) =
             match numbers with
-            | (digits, startColumn, endColumn) as currentNumber :: rest ->
+            | (startColumn, endColumn) :: rest ->
                 if currentColumn = endColumn + 1 then
-                    (digits + digit, startColumn, currentColumn) :: rest
+                    (startColumn, currentColumn) :: rest
                 else
-                    newNumber :: currentNumber :: rest
-            | [] -> [ newNumber ]
+                    (currentColumn, currentColumn) :: (startColumn, endColumn) :: rest
+            | [] -> [ (currentColumn, currentColumn) ]
 
-        let numbers: (string * int * int) list = digits |> Seq.fold folder []
+        let numberColumns: (int * int) list = digits |> Seq.fold folder []
 
-        let toPartNumber (digits: string, startColumn: int, endColumn: int) =
-            { Number = Int32.Parse(digits)
+        let toPartNumber (startColumn: int, endColumn: int) =
+            { Number = Int32.Parse(line[startColumn..endColumn])
               Row = row
               StartColumn = startColumn
               EndColumn = endColumn }
 
-        numbers |> Seq.map toPartNumber |> Seq.toList |> List.rev
+        numberColumns |> Seq.map toPartNumber |> Seq.toList
 
     lines |> List.indexed |> List.collect extractPartNumbersFromRow
 
