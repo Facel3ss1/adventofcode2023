@@ -1,17 +1,18 @@
 ﻿module Day6
 
-type Race = { Time: int; RecordDistance: int }
+type Race =
+    { Time: uint64; RecordDistance: uint64 }
 
-let parseRaces (lines: string list) : Race list =
+let parsePart1Races (lines: string list) : Race list =
     let (timesLine, distancesLine) =
         match lines with
         | [ timesLine; distancesLines ] -> (timesLine, distancesLines)
         | _ -> failwith "invalid race"
 
-    let times = timesLine.Split(' ') |> Array.tail |> Array.choose Util.tryParseInt
+    let times = timesLine.Split(' ') |> Array.tail |> Array.choose Util.tryParseUInt64
 
     let distances =
-        distancesLine.Split(' ') |> Array.tail |> Array.choose Util.tryParseInt
+        distancesLine.Split(' ') |> Array.tail |> Array.choose Util.tryParseUInt64
 
     Array.zip times distances
     |> Array.map (fun (time, distance) ->
@@ -19,16 +20,31 @@ let parseRaces (lines: string list) : Race list =
           RecordDistance = distance })
     |> Array.toList
 
-let waysToWin (race: Race) : int =
-    let holdTimes = [ 1 .. race.Time - 1 ]
-    let distance (holdTime: int) = holdTime * (race.Time - holdTime)
+let parsePart2Race (lines: string list) : Race =
+    let (timesLine, distancesLine) =
+        match lines with
+        | [ timesLine; distancesLines ] -> (timesLine, distancesLines)
+        | _ -> failwith "invalid race"
 
-    holdTimes
-    |> List.map distance
-    |> List.filter (fun d -> d > race.RecordDistance)
-    |> List.length
+    let time = timesLine.Split(' ') |> Array.tail |> Array.reduce (+) |> uint64
+    let distance = distancesLine.Split(' ') |> Array.tail |> Array.reduce (+) |> uint64
+
+    { Time = time
+      RecordDistance = distance }
+
+let waysToWin (race: Race) : int =
+    let holdTimes = [ 1UL .. race.Time - 1UL ]
+    let distance (holdTime: uint64) = holdTime * (race.Time - holdTime)
+    let isWinningGame (d: uint64) : bool = d > race.RecordDistance
+
+    let distances = holdTimes |> List.map distance
+    let startIndex = distances |> List.findIndex isWinningGame
+    let endIndex = distances |> List.findIndexBack isWinningGame
+
+    (endIndex - startIndex) + 1
 
 let solvePart1 (lines: string list) : string =
-    let races = parseRaces lines
+    parsePart1Races lines |> List.map waysToWin |> List.reduce (*) |> string
 
-    races |> List.map waysToWin |> List.reduce (*) |> string
+let solvePart2 (lines: string list) : string =
+    parsePart2Race lines |> waysToWin |> string
