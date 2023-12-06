@@ -78,7 +78,7 @@ let solvePart1 (lines: string list) : string =
 
     partNumbers
     |> List.filter (getAdjacentSymbols symbols >> List.isEmpty >> not)
-    |> List.map (fun partNumber -> partNumber.Number)
+    |> List.map _.Number
     |> List.sum
     |> string
 
@@ -103,7 +103,7 @@ let solvePart2 (lines: string list) : string =
         |> List.filter (fun partNumbers -> List.length partNumbers = 2)
 
     gearPartNumbers
-    |> List.map (List.map (fun partNumber -> partNumber.Number))
+    |> List.map (List.map _.Number)
     |> List.map (List.reduce (*))
     |> List.sum
     |> string

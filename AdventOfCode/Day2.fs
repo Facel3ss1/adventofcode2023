@@ -60,7 +60,7 @@ let solvePart1 (lines: string list) : string =
 
     games
     |> List.filter (isGamePossible { Red = 12; Green = 13; Blue = 14 })
-    |> List.map (fun game -> game.Id)
+    |> List.map _.Id
     |> List.sum
     |> string
 
