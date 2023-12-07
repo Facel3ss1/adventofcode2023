@@ -16,6 +16,7 @@ let part2Solver day =
     | 2 -> Day2.solvePart2
     | 3 -> Day3.solvePart2
     | 6 -> Day6.solvePart2
+    | 7 -> Day7.solvePart2
     | _ -> fun _ -> "not solved"
 
 let readLines (day: int) =
