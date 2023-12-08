@@ -8,6 +8,7 @@ let part1Solver day =
     | 4 -> Day4.solvePart1
     | 6 -> Day6.solvePart1
     | 7 -> Day7.solvePart1
+    | 8 -> Day8.solvePart1
     | _ -> fun _ -> "not solved"
 
 let part2Solver day =
