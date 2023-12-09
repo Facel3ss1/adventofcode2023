@@ -9,6 +9,7 @@ let part1Solver day =
     | 6 -> Day6.solvePart1
     | 7 -> Day7.solvePart1
     | 8 -> Day8.solvePart1
+    | 9 -> Day9.solvePart1
     | _ -> fun _ -> "not solved"
 
 let part2Solver day =
@@ -29,8 +30,8 @@ let readLines (day: int) =
 let printSolutions (day: int) =
     let lines = readLines day
     let part1Solution = part1Solver day <| lines
-    let part2Solution = part2Solver day <| lines
     printfn $"Part 1: {part1Solution}"
+    let part2Solution = part2Solver day <| lines
     printfn $"Part 2: {part2Solution}"
 
 [<EntryPoint>]
