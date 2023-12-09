@@ -9,20 +9,27 @@ let parseSequences (lines: string list) : int list list =
 let differences (sequence: int list) : int list =
     sequence |> List.pairwise |> List.map (fun (a, b) -> b - a)
 
-let getLastSteps (sequence: int list) : int list =
+let getEdgeSteps (getEdgeFn: int list -> int) (sequence: int list) : int list =
     let rec recurse (currentLevel: int list) =
         if List.forall (fun a -> a = 0) currentLevel then
             [ 0 ]
         else
-            let lastStep = List.last currentLevel
-            lastStep :: recurse (differences currentLevel)
+            let edgeStep = getEdgeFn currentLevel
+            edgeStep :: recurse (differences currentLevel)
 
     recurse sequence |> List.rev
 
-let extrapolate (sequence: int list) : int =
-    let lastSteps = getLastSteps sequence
-    List.sum lastSteps
+let extrapolate (getEdgeFn: int list -> int) (combineFn: int -> int -> int) (sequence: int list) : int =
+    let edgeSteps = getEdgeSteps getEdgeFn sequence
+    List.reduce combineFn edgeSteps
+
+let solve (getEdgeFn: int list -> int) (combineFn: int -> int -> int) (sequences: int list list) : int =
+    sequences |> List.map (extrapolate getEdgeFn combineFn) |> List.sum
 
 let solvePart1 (lines: string list) : string =
     let sequences = parseSequences lines
-    sequences |> List.map extrapolate |> List.sum |> string
+    solve List.last (+) sequences |> string
+
+let solvePart2 (lines: string list) : string =
+    let sequences = parseSequences lines
+    solve List.head (fun a b -> b - a) sequences |> string
