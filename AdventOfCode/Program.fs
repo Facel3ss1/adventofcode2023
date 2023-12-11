@@ -6,6 +6,7 @@ let part1Solver day =
     | 2 -> Day2.solvePart1
     | 3 -> Day3.solvePart1
     | 4 -> Day4.solvePart1
+    | 5 -> Day5.solvePart1
     | 6 -> Day6.solvePart1
     | 7 -> Day7.solvePart1
     | 8 -> Day8.solvePart1
