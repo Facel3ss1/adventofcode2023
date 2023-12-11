@@ -1,16 +1,19 @@
 ﻿module Day11
 
-type Coord = { Row: int; Column: int }
+type Coord = { Row: uint64; Column: uint64 }
 
 type Image =
     { Galaxies: Coord list
-      EmptyRows: int list
-      EmptyColumns: int list }
+      EmptyRows: uint64 list
+      EmptyColumns: uint64 list }
 
 let extractGalaxies (lines: string list) : Coord list =
     let extractGalaxiesFromRow (row: int, line: string) : Coord list =
         let isGalaxy (c: char) = c = '#'
-        let toCoord (column: int, _) = { Row = row; Column = column }
+
+        let toCoord (column: int, _) =
+            { Row = uint64 row
+              Column = uint64 column }
 
         line
         |> Seq.indexed
@@ -20,10 +23,14 @@ let extractGalaxies (lines: string list) : Coord list =
 
     lines |> List.indexed |> List.collect extractGalaxiesFromRow
 
-let extractEmptyRowsAndColumns (lines: string list) : int list * int list =
-    let getEmptyRows (rows: char list list) : int list =
+let extractEmptyRowsAndColumns (lines: string list) : uint64 list * uint64 list =
+    let getEmptyRows (rows: char list list) : uint64 list =
         let isRowEmpty (row: char list) = row |> List.forall (fun c -> c = '.')
-        rows |> List.indexed |> List.filter (snd >> isRowEmpty) |> List.map fst
+
+        rows
+        |> List.indexed
+        |> List.filter (snd >> isRowEmpty)
+        |> List.map (fst >> uint64)
 
     let rows = lines |> List.map Seq.toList
     let emptyRows = rows |> getEmptyRows
@@ -39,7 +46,12 @@ let extractImage (lines: string list) : Image =
       EmptyRows = emptyRows
       EmptyColumns = emptyColumns }
 
-let distance (emptyRows: int list) (emptyColumns: int list) (firstGalaxy: Coord, secondGalaxy: Coord) : int =
+let distance
+    (expansionMultiplier: uint64)
+    (emptyRows: uint64 list)
+    (emptyColumns: uint64 list)
+    (firstGalaxy: Coord, secondGalaxy: Coord)
+    : uint64 =
     let (leftGalaxy, rightGalaxy) =
         if firstGalaxy.Column < secondGalaxy.Column then
             (firstGalaxy, secondGalaxy)
@@ -58,23 +70,29 @@ let distance (emptyRows: int list) (emptyColumns: int list) (firstGalaxy: Coord,
     let overlappingRows =
         emptyRows
         |> List.filter (fun row -> topGalaxy.Row < row && row < bottomGalaxy.Row)
+        |> List.length
+        |> uint64
 
     let overlappingColumns =
         emptyColumns
         |> List.filter (fun column -> leftGalaxy.Column < column && column < rightGalaxy.Column)
+        |> List.length
+        |> uint64
 
     horizontalDistance
     + verticalDistance
-    + List.length overlappingRows
-    + List.length overlappingColumns
+    + (overlappingRows + overlappingColumns) * (expansionMultiplier - 1UL)
+
+let solve (expansionMultiplier: uint64) (image: Image) : uint64 =
+    List.allPairs image.Galaxies image.Galaxies
+    |> List.map (distance expansionMultiplier image.EmptyRows image.EmptyColumns)
+    |> List.sum
+    |> (fun sum -> sum / 2UL)
 
 let solvePart1 (lines: string list) : string =
     let image = extractImage lines
+    image |> solve 2UL |> string
 
-    List.allPairs image.Galaxies image.Galaxies
-    |> List.map (distance image.EmptyRows image.EmptyColumns)
-    |> List.sum
-    |> (fun sum -> sum / 2)
-    |> string
-
-let solvePart2 (lines: string list) : string = "todo"
+let solvePart2 (lines: string list) : string =
+    let image = extractImage lines
+    image |> solve 1000000UL |> string
